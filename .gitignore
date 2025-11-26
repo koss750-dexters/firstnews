@@ -21,3 +21,6 @@ bootstrap/cache/services.php
 bootstrap/cache/packages.php
 storage/framework/views/*.php
 storage/logs/*.log
+*.md
+*.MD
+README.md
