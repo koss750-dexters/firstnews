@@ -3,49 +3,37 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Teacher;
+use App\Http\Requests\TeacherRegistrationRequest;
+use App\Services\TeacherRegistrationService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class TeacherRegistrationApiController extends Controller
 {
     /**
-     * Handle API registration request.
+     * @var TeacherRegistrationService
      */
-    public function register(Request $request): JsonResponse
+    protected $registrationService;
+
+    /**
+     * Constructor to inject the registration service.
+     *
+     * @param TeacherRegistrationService $registrationService
+     */
+    public function __construct(TeacherRegistrationService $registrationService)
     {
-        $validator = Validator::make($request->all(), [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:teachers,email|max:255',
-            'subjects' => 'required|array|min:1',
-            'subjects.*' => 'required|string|max:255',
-        ], [
-            'first_name.required' => 'First name is required.',
-            'last_name.required' => 'Last name is required.',
-            'email.required' => 'Email is required.',
-            'email.email' => 'Please enter a valid email address.',
-            'email.unique' => 'This email is already registered.',
-            'subjects.required' => 'Please select at least one subject.',
-            'subjects.min' => 'Please select at least one subject.',
-        ]);
+        $this->registrationService = $registrationService;
+    }
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
+    /**
+     * Handle API registration request.
+     *
+     * @param TeacherRegistrationRequest $request
+     * @return JsonResponse
+     */
+    public function register(TeacherRegistrationRequest $request): JsonResponse
+    {
         try {
-            $teacher = Teacher::create([
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                'email' => $request->email,
-                'subjects' => $request->subjects,
-            ]);
+            $teacher = $this->registrationService->register($request->getTeacherData());
 
             return response()->json([
                 'success' => true,
@@ -61,7 +49,7 @@ class TeacherRegistrationApiController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred during registration. Please try again.',
+                'message' => $e->getMessage(),
                 'error' => config('app.debug') ? $e->getMessage() : null,
             ], 500);
         }
