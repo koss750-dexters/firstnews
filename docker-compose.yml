@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: teacher-registration-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - teacher-registration-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: teacher-registration-nginx
+    restart: unless-stopped
+    expose:
+      - "80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - teacher-registration-network
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: teacher-registration-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: teacher_registration
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql
+    expose:
+      - "3306"
+    networks:
+      - teacher-registration-network
+
+networks:
+  teacher-registration-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
+
