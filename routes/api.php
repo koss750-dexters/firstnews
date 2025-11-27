@@ -5,3 +5,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/teachers/register', [TeacherRegistrationApiController::class, 'register']);
 
+

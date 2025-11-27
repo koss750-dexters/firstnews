@@ -104,6 +104,29 @@
             display: block;
         }
 
+        .client-error-message {
+            background: #e74c3c;
+            color: white;
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .success-message {
             background: #2ecc71;
             color: white;
@@ -175,4 +198,5 @@
     </div>
 </body>
 </html>
+
 

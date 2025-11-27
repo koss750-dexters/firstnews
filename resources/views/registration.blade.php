@@ -112,6 +112,8 @@
             @enderror
         </div>
 
+        <div id="clientValidationError" class="client-error-message" style="display: none;"></div>
+
         <button type="submit" class="btn-submit">Register</button>
     </form>
 
@@ -129,13 +131,22 @@
     <script>
         // Client-side validation
         document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            const errorDiv = document.getElementById('clientValidationError');
             const subjects = document.querySelectorAll('input[name="subjects[]"]:checked');
+            
+            // Clear previous errors
+            errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
+            
             if (subjects.length === 0) {
                 e.preventDefault();
-                alert('Please select at least one subject.');
+                errorDiv.textContent = 'Please select at least one subject.';
+                errorDiv.style.display = 'block';
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return false;
             }
         });
     </script>
 @endsection
+
 
